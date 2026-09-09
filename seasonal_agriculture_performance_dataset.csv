@@ -1,0 +1,73 @@
+import numpy as np
+import pandas as pd
+
+np.random.seed(42)
+n = 4000
+
+seasons = np.random.choice(['Kharif', 'Rabi', 'Zaid'], size=n, p=[0.4, 0.4, 0.2])
+crops = np.random.choice(
+    [
+        'Sugarcane',
+        'Chilli',
+        'Cotton',
+        'Groundnut',
+        'Pulses',
+        'Maize',
+        'Rice',
+        'Wheat',
+    ],
+    size=n,
+)
+irrigations = np.random.choice(
+    ['Drip', 'Sprinkler', 'Rainfed', 'Flood'], size=n
+)
+
+data = {
+    'Farm_ID': [f'FARM_{i+1:04d}' for i in range(n)],
+    'Season': seasons,
+    'Crop': crops,
+    'Irrigation_Method': irrigations,
+    'Yield_Tonnes_Ha': np.where(
+        seasons == 'Kharif',
+        np.random.normal(5.64, 1.2, n),
+        np.where(
+            seasons == 'Rabi',
+            np.random.normal(5.08, 1.0, n),
+            np.random.normal(4.67, 0.8, n),
+        ),
+    ).round(2),
+    'Profit_INR': np.where(
+        seasons == 'Kharif',
+        np.random.normal(179000, 30000, n),
+        np.where(
+            seasons == 'Rabi',
+            np.random.normal(88000, 20000, n),
+            np.random.normal(-25000, 15000, n),
+        ),
+    ).round(2),
+    'Water_Efficiency_t_per_1000m3': np.where(
+        irrigations == 'Drip',
+        np.random.normal(6.27, 0.8, n),
+        np.where(
+            irrigations == 'Sprinkler',
+            np.random.normal(4.65, 0.6, n),
+            np.random.normal(3.44, 0.5, n),
+        ),
+    ).round(2),
+    'Humidity_pct': np.random.uniform(40, 85, n).round(1),
+    'Disease_Pest_Risk_pct': np.where(
+        seasons == 'Kharif',
+        np.random.normal(54.5, 8, n),
+        np.where(
+            seasons == 'Rabi',
+            np.random.normal(40.5, 6, n),
+            np.random.normal(38.2, 5, n),
+        ),
+    ).round(1),
+    'Rainfall_mm': np.random.uniform(200, 1100, n).round(1),
+    'Avg_Temperature_C': np.random.uniform(18, 38, n).round(1),
+}
+
+df = pd.DataFrame(data)
+df.to_csv('seasonal_agriculture_performance_dataset.csv', index=False)
+print('Dataset Generated: seasonal_agriculture_performance_dataset.csv')
